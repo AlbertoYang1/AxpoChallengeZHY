@@ -45,7 +45,7 @@ public class TradeManagerTest
         _powerServiceMock.Setup(x => x.GetTradesAsync(It.IsAny<DateTime>())).ReturnsAsync([]);
 
         //Act & Assert
-        var exception = await Assert.ThrowsAsync<NoTradesError>(async () =>
+        var exception = await Assert.ThrowsAsync<NoTradesException>(async () =>
             await tradeManager.GetTradeReportAsync(testDate));
         exception.Message.Should().Be("No data was retrieved from PowerService in TradeManager");
     }

@@ -18,7 +18,7 @@ public class TradeManager(IPowerService powerService) : ITradeManager
 
         // Throw custom exception if there's no data, actions may vary on business needs 
         if (trades is null || !trades.Any())
-            throw new NoTradesError("No data was retrieved from PowerService in TradeManager");
+            throw new NoTradesException("No data was retrieved from PowerService in TradeManager");
 
         // We assume every period has the same Length
         var periodCount = trades.First().Periods.Length;
