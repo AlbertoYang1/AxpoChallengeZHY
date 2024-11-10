@@ -42,7 +42,7 @@ builder.Services.AddResiliencePipeline(pipelineKey, x =>
         ShouldHandle = args => args.Outcome switch
         {
             { Exception: PowerServiceException } => PredicateResult.True(),
-            { Exception: NoTradesError } => PredicateResult.True(),
+            { Exception: NoTradesException } => PredicateResult.True(),
             _ => PredicateResult.False(),
         },
         Delay = TimeSpan.FromSeconds(3),

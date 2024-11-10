@@ -1,15 +1,15 @@
 ﻿namespace AxpoChallengeZHY.Domain.CustomError;
 
-public class NoTradesError : Exception
+public class NoTradesException : Exception
 {
     public string ErrorMessage { get; }
 
-    public NoTradesError(string errorMessage) : base(errorMessage)
+    public NoTradesException(string errorMessage) : base(errorMessage)
     {
         ErrorMessage = errorMessage;
     }
 
-    public NoTradesError(string errorMessage, Exception innerException) : base(errorMessage, innerException)
+    public NoTradesException(string errorMessage, Exception innerException) : base(errorMessage, innerException)
     {
         ErrorMessage = errorMessage;
     }
