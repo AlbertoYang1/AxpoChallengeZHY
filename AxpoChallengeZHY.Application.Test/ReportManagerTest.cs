@@ -24,7 +24,7 @@ public class ReportManagerTest
     {
         _tradeManagerMock = new();
         _reportRepository = new();
-        _configurationMock = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        _configurationMock = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
             {
                 {"CsvHelperConfig:PublishPath", "testPath" }
             }).Build();
@@ -87,10 +87,10 @@ public class ReportManagerTest
     }
 
     [Fact]
-    public async Task GenerateReportCsv_Throw_ArgumentNullException()
+    public void GenerateReportCsv_Throw_ArgumentNullException()
     {
         // Arrange
-        var configuationTest = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        var configuationTest = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
             {
                 {"CsvHelperConfig:PublishPath", null}
             }).Build(); ;
@@ -108,7 +108,7 @@ public class ReportManagerTest
 
     }
 
-    private ReportDto GenerateReportDto()
+    private static ReportDto GenerateReportDto()
     {
         var date = new DateTime(2024, 11, 27);
         const int hours = 24;
