@@ -15,7 +15,6 @@ namespace AxpoChallengeZHY.Application.Test;
 public class ReportManagerTest
 {
     private readonly Mock<ITradeManager> _tradeManagerMock;
-    private IConfiguration _configurationMock;
     private readonly Mock<IReportRepository> _reportRepository;
     private readonly ReportManager _reportManager;
     private readonly Mock<ResiliencePipelineProvider<string>> _pipelineProviderMock;
@@ -24,17 +23,17 @@ public class ReportManagerTest
     {
         _tradeManagerMock = new();
         _reportRepository = new();
-        _configurationMock = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        _pipelineProviderMock = new();
+        _pipelineProviderMock.Setup(p => p.GetPipeline("retryPipeline")).Returns(ResiliencePipeline.Empty);
+        
+        var _configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
             {
                 {"CsvHelperConfig:PublishPath", "testPath" }
             }).Build();
 
-        _pipelineProviderMock = new();
-        _pipelineProviderMock.Setup(p => p.GetPipeline("retryPipeline")).Returns(ResiliencePipeline.Empty);
-
         _reportManager = new(
             _tradeManagerMock.Object,
-            _configurationMock,
+            _configuration,
             _reportRepository.Object, NullLogger<ReportManager>.Instance,
             _pipelineProviderMock.Object);
     }
@@ -90,14 +89,14 @@ public class ReportManagerTest
     public void GenerateReportCsv_Throw_ArgumentNullException()
     {
         // Arrange
-        var configuationTest = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        var configurationTest = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
             {
                 {"CsvHelperConfig:PublishPath", null}
             }).Build(); ;
 
         //Act
         Action act = () => new ReportManager(_tradeManagerMock.Object,
-            configuationTest,
+            configurationTest,
             _reportRepository.Object, NullLogger<ReportManager>.Instance,
             _pipelineProviderMock.Object);
 

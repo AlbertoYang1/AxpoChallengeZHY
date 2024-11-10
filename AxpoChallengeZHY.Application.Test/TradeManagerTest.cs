@@ -9,12 +9,12 @@ namespace AxpoChallengeZHY.Application.Test;
 public class TradeManagerTest
 {
     private readonly Mock<IPowerService> _powerServiceMock;
-    private readonly TradeManager tradeManager;
+    private readonly TradeManager _tradeManager;
 
     public TradeManagerTest()
     {
         _powerServiceMock = new();
-        tradeManager = new(_powerServiceMock.Object);
+        _tradeManager = new(_powerServiceMock.Object);
     }
 
     [Theory]
@@ -27,7 +27,7 @@ public class TradeManagerTest
         _powerServiceMock.Setup(x => x.GetTradesAsync(It.IsAny<DateTime>())).ReturnsAsync(GeneratePowerTrades(testDate.AddDays(1), powerTrades, periods, volume));
 
         // Act
-        var report = await tradeManager.GetTradeReportAsync(testDate);
+        var report = await _tradeManager.GetTradeReportAsync(testDate);
 
         // Assert
         report.PowerPeriods.First().volumes.Should().BeGreaterThanOrEqualTo(volume * powerTrades);
@@ -46,7 +46,7 @@ public class TradeManagerTest
 
         //Act & Assert
         var exception = await Assert.ThrowsAsync<NoTradesException>(async () =>
-            await tradeManager.GetTradeReportAsync(testDate));
+            await _tradeManager.GetTradeReportAsync(testDate));
         exception.Message.Should().Be("No data was retrieved from PowerService in TradeManager");
     }
 
@@ -59,7 +59,7 @@ public class TradeManagerTest
 
         //Act & Assert
         var exception = await Assert.ThrowsAsync<PowerServiceException>(async () =>
-            await tradeManager.GetTradeReportAsync(testDate));
+            await _tradeManager.GetTradeReportAsync(testDate));
         exception.Message.Should().Be("Error retrieving power volumes");
     }
 

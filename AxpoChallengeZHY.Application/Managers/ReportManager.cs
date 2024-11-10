@@ -6,25 +6,15 @@ using Polly.Registry;
 
 namespace AxpoChallengeZHY.Application.Managers;
 
-public class ReportManager : IReportManager
+public class ReportManager(ITradeManager tradeManager, 
+    IConfiguration configuration, 
+    IReportRepository reportRepository, 
+    ILogger<ReportManager> logger, 
+    ResiliencePipelineProvider<string> pipelineProvider) 
+    : IReportManager
 {
-
-    private readonly ITradeManager _tradeManager;
-    private readonly IReportRepository _reportRepository;
-    private readonly ILogger<ReportManager> _logger;
-    private readonly ResiliencePipelineProvider<string> _pipelineProvider;
-    private readonly ResiliencePipeline _pipeline;
-    private readonly string basePath;
-
-    public ReportManager(ITradeManager tradeManager, IConfiguration configuration, IReportRepository reportRepository, ILogger<ReportManager> logger, ResiliencePipelineProvider<string> pipelineProvider)
-    {
-        basePath = configuration.GetSection("CsvHelperConfig:PublishPath").Value ?? throw new ArgumentNullException(nameof(ReportManager), "Null configuration section");
-        _tradeManager = tradeManager;
-        _reportRepository = reportRepository;
-        _logger = logger;
-        _pipelineProvider = pipelineProvider;
-        _pipeline = _pipelineProvider.GetPipeline("retryPipeline");
-    }
+    private readonly ResiliencePipeline _pipeline = pipelineProvider.GetPipeline("retryPipeline");
+    private readonly string basePath = configuration.GetSection("CsvHelperConfig:PublishPath").Value ?? throw new ArgumentNullException(nameof(ReportManager), "Null configuration section");
 
     /// <inheritdoc/>
     public async Task GenerateReportCsvAsync(DateTime reportDate, string identifier)
@@ -33,13 +23,10 @@ public class ReportManager : IReportManager
         var publishPath = string.Concat([basePath, fileName]);
 
         // pipeline which handle the retries, configured in program.cs
-        var reportDto = await _pipeline.ExecuteAsync(async ct =>
-        {
-            return await _tradeManager.GetTradeReportAsync(reportDate); ;
-        });
+        var reportDto = await _pipeline.ExecuteAsync(async _ => await tradeManager.GetTradeReportAsync(reportDate));
 
-        await _reportRepository.SaveReportCsvAsync(reportDto, publishPath);
-        _logger.LogInformation("Identifier: {identifier} at reportDate: {reportDate}. Published report {fileName} in {path}"
+        await reportRepository.SaveReportCsvAsync(reportDto, publishPath);
+        logger.LogInformation("Identifier: {identifier} at reportDate: {reportDate}. Published report {fileName} in {path}"
             , identifier, reportDate, fileName, publishPath);
     }
 
