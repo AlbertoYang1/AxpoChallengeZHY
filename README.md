@@ -39,7 +39,7 @@ The path where the CSV report is published can be customized by setting the _Csv
 
 ## How to Use
 1. Clone this repository to your local machine.
-2.Install the necessary NuGet packages listed in the csproj file.
+2. Install the necessary NuGet packages listed in the csproj file.
 3. Configure the CoravelPipelineConfig:MinuteInterval variable in your Program.cs to adjust the report generation frequency.
 4. Run the application, and reports will be generated according to the specified schedule in the folder specified, by default ..\PowerPositions\AxpoChallenge_{ENVIRONMENT}.
 5. Logs will be generated according to the configuration, and can be found in the designated log file and console output in DEBUG mode.
