@@ -75,14 +75,14 @@ public class ReportManagerTest
     public async Task GenerateReportCsv_Throw_NoTradesError()
     {
         // Arrange
-        _tradeManagerMock.Setup(x => x.GetTradeReportAsync(It.IsAny<DateTime>())).ThrowsAsync(new NoTradesError("No data was retrieved from PowerService in TradeManager"));
+        _tradeManagerMock.Setup(x => x.GetTradeReportAsync(It.IsAny<DateTime>())).ThrowsAsync(new NoTradesException("No data was retrieved from PowerService in TradeManager"));
         _pipelineProviderMock.Setup(p => p.GetPipeline("retryPipeline")).Returns(ResiliencePipeline.Empty);
 
         //Act & Assert
         await _reportManager.Invoking(async x =>
             await x.GenerateReportCsvAsync(new DateTime(2024, 11, 27), Guid.NewGuid().ToString()))
         .Should()
-        .ThrowAsync<NoTradesError>()
+        .ThrowAsync<NoTradesException>()
         .WithMessage("No data was retrieved from PowerService in TradeManager");
     }
 
