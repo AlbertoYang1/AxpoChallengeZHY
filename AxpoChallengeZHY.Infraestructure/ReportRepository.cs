@@ -9,14 +9,14 @@ namespace AxpoChallengeZHY.Infraestructure;
 
 public class ReportRepository : IReportRepository
 {
-    private readonly CsvConfiguration csvConfiguration = new(CultureInfo.InvariantCulture) { Delimiter = "|", MemberTypes = MemberTypes.Fields };
+    private readonly CsvConfiguration _csvConfiguration = new(CultureInfo.InvariantCulture) { Delimiter = "|", MemberTypes = MemberTypes.Fields };
 
     /// <inheritdoc/>
     public async Task SaveReportCsvAsync(ReportDto reportDto, string publishPath)
     {
 
         using var writer = new StreamWriter(publishPath!);
-        using var csvWriter = new CsvWriter(writer, csvConfiguration);
+        using var csvWriter = new CsvWriter(writer, _csvConfiguration);
 
         csvWriter.Context.RegisterClassMap<ReportTupleMap>();
         await csvWriter.WriteRecordsAsync(reportDto.PowerPeriods);
