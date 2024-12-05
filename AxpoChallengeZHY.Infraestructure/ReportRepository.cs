@@ -9,7 +9,8 @@ namespace AxpoChallengeZHY.Infraestructure;
 
 public class ReportRepository : IReportRepository
 {
-    private readonly CsvConfiguration _csvConfiguration = new(CultureInfo.InvariantCulture) { Delimiter = "|", MemberTypes = MemberTypes.Fields };
+    private const string csvDelimiter = ";";
+    private readonly CsvConfiguration _csvConfiguration = new(CultureInfo.InvariantCulture) { Delimiter = csvDelimiter, MemberTypes = MemberTypes.Fields };
 
     /// <inheritdoc/>
     public async Task SaveReportCsvAsync(ReportDto reportDto, string publishPath)
