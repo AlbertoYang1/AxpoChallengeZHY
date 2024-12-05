@@ -7,6 +7,7 @@ This is a report generation system designed to generate CSV reports based on spe
 * Resilience: The system uses `Microsoft.Extensions.Resilience`, based on `Polly`, to handle retry logic and ensure system resilience in case of controlled failures.
 * Logging: Integrated with `Serilog` for logging, configured to output logs both to a file and to the console when running in DEBUG mode.
 * Testing: The application is tested using `XUnit`, `FluentAssertions`, and `Moq` to ensure reliability and proper functioning of the system.
+* DDD: Architecture around the domain for a better organised and easier to test code base. 
   
 ## Libraries Used
 * `CsvHelper`: A library for handling CSV file generation.
