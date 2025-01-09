@@ -3,16 +3,10 @@ using Coravel.Invocable;
 
 namespace AxpoChallengeZHY;
 
-public class PowerReportService : IInvocable
+public class PowerReportService(ILogger<PowerReportService> logger, IReportManager reportManager) : IInvocable
 {
-    private readonly ILogger<PowerReportService> _logger;
-    private readonly IReportManager _reportManager;
-
-    public PowerReportService(ILogger<PowerReportService> logger, IReportManager reportManager)
-    {
-        _logger = logger;
-        _reportManager = reportManager;
-    }
+    private readonly ILogger<PowerReportService> _logger = logger;
+    private readonly IReportManager _reportManager = reportManager;
 
     /// <summary>
     /// Service invoked by the scheduler, 
@@ -21,7 +15,7 @@ public class PowerReportService : IInvocable
     /// <returns></returns>
     public async Task Invoke()
     {
-        // DateTime.Now has a local timeZone from the machine
+        // DateTime.Now has a local timeZone from the machine it can be changed to offset
         var reportDate = DateTime.Now;
         var identifier = Guid.NewGuid().ToString();
 

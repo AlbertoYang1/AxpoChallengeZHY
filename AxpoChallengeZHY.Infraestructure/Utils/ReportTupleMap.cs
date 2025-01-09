@@ -1,8 +1,8 @@
 ﻿using CsvHelper.Configuration;
 
-namespace AxpoChallengeZHY.Infraestructure;
+namespace AxpoChallengeZHY.Infraestructure.Utils;
 
-internal class ReportTupleMap : ClassMap<ValueTuple<DateTime, double>>
+internal class ReportTupleMap : ClassMap<ValueTuple<string, double>>
 {
     internal ReportTupleMap()
     {
@@ -10,4 +10,3 @@ internal class ReportTupleMap : ClassMap<ValueTuple<DateTime, double>>
         Map(m => m.Item2).Name("Volume");
     }
 }
-

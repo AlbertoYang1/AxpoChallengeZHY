@@ -1,5 +1,6 @@
-﻿using AxpoChallengeZHY.Domain;
-using AxpoChallengeZHY.Domain.Interfaces;
+﻿using AxpoChallengeZHY.Domain.Interfaces;
+using AxpoChallengeZHY.Domain.PowerReport;
+using AxpoChallengeZHY.Infraestructure.Utils;
 using CsvHelper;
 using CsvHelper.Configuration;
 using System.Globalization;

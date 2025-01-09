@@ -1,4 +1,6 @@
-﻿namespace AxpoChallengeZHY.Domain.Interfaces;
+﻿using AxpoChallengeZHY.Domain.PowerReport;
+
+namespace AxpoChallengeZHY.Domain.Interfaces;
 
 public interface ITradeManager
 {

@@ -1,8 +1,8 @@
 using Axpo;
 using AxpoChallengeZHY.Application.Managers;
-using AxpoChallengeZHY.Domain;
 using AxpoChallengeZHY.Domain.CustomError;
 using AxpoChallengeZHY.Domain.Interfaces;
+using AxpoChallengeZHY.Domain.PowerReport;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -25,7 +25,7 @@ public class ReportManagerTest
         _reportRepository = new();
         _pipelineProviderMock = new();
         _pipelineProviderMock.Setup(p => p.GetPipeline("retryPipeline")).Returns(ResiliencePipeline.Empty);
-        
+
         var _configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
             {
                 {"CsvHelperConfig:PublishPath", "testPath" }
@@ -112,11 +112,11 @@ public class ReportManagerTest
         var date = new DateTime(2024, 11, 27);
         const int hours = 24;
 
-        var powerPeriodTest = new List<(DateTime dateTime, double volumes)>();
+        var powerPeriodTest = new List<(string dateTime, double volumes)>();
         for (int i = 0; i < hours; i++)
         {
             double testVolume = 100 * i + 100;
-            powerPeriodTest.Add((date.ToUniversalTime(), testVolume));
+            powerPeriodTest.Add((date.ToUniversalTime().ToString("o"), testVolume));
             date = date.AddHours(1);
         }
 
