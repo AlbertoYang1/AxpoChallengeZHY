@@ -6,27 +6,32 @@ using Polly.Registry;
 
 namespace AxpoChallengeZHY.Application.Managers;
 
-public class ReportManager(ITradeManager tradeManager, 
-    IConfiguration configuration, 
-    IReportRepository reportRepository, 
-    ILogger<ReportManager> logger, 
-    ResiliencePipelineProvider<string> pipelineProvider) 
+public class ReportManager(ITradeManager tradeManager,
+    IConfiguration configuration,
+    IReportRepository reportRepository,
+    ILogger<ReportManager> logger,
+    ResiliencePipelineProvider<string> pipelineProvider)
     : IReportManager
 {
     private readonly ResiliencePipeline _pipeline = pipelineProvider.GetPipeline("retryPipeline");
     private readonly string basePath = configuration.GetSection("CsvHelperConfig:PublishPath").Value ?? throw new ArgumentNullException(nameof(ReportManager), "Null configuration section");
 
     /// <inheritdoc/>
+    // This method could have more logging
     public async Task GenerateReportCsvAsync(DateTime reportDate, string identifier)
     {
-        var fileName = GenerateNameCsv(reportDate);
+        var nextDay = reportDate.AddDays(1);
+        var fileName = GenerateNameCsv(reportDate, nextDay);
         var publishPath = string.Concat([basePath, fileName]);
 
         // pipeline which handle the retries, configured in program.cs
-        var reportDto = await _pipeline.ExecuteAsync(async _ => await tradeManager.GetTradeReportAsync(reportDate));
+        var reportDto = await _pipeline.ExecuteAsync(async _ => await tradeManager.GetTradeReportAsync(nextDay));
+
+        // Create directory if it does not exist
+        Directory.CreateDirectory(basePath);
 
         await reportRepository.SaveReportCsvAsync(reportDto, publishPath);
-        logger.LogInformation("Identifier: {identifier} at reportDate: {reportDate}. Published report {fileName} in {path}"
+        logger.LogInformation("Identifier: {Identifier} at reportDate: {ReportDate}. Published report {FileName} in {Path}"
             , identifier, reportDate, fileName, publishPath);
     }
 
@@ -35,8 +40,6 @@ public class ReportManager(ITradeManager tradeManager,
     /// </summary>
     /// <param name="reportDate">Date of the request</param>
     /// <returns>csv file name for the power report</returns>
-    private static string GenerateNameCsv(DateTime reportDate)
-    {
-        return $"PowerPosition_{reportDate:yyyyMMdd}_{reportDate:yyyyMMddhhmm}.csv";
-    }
+    private static string GenerateNameCsv(DateTime reportDate, DateTime nextDay) =>
+        $"PowerPosition_{nextDay:yyyyMMdd}_{reportDate:yyyyMMddhhmm}.csv";
 }

@@ -62,6 +62,7 @@ app.Services.UseScheduler(scheduler =>
     scheduler.Schedule<PowerReportService>()
        .Cron($"{DateTime.Now.Minute}-59/{minuteInterval} * * * *")
        .RunOnceAtStart()
+       // Might not be necessary, but it's a good practice to prevent overlapping
        .PreventOverlapping(Guid.NewGuid().ToString());
 });
 

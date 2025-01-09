@@ -3,9 +3,7 @@ using AxpoChallengeZHY.Application.Managers;
 using AxpoChallengeZHY.Domain.CustomError;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Moq;
-using System.Runtime.CompilerServices;
 
 namespace AxpoChallengeZHY.Application.Test;
 
@@ -13,6 +11,7 @@ public class TradeManagerTest
 {
     private readonly Mock<IPowerService> _powerServiceMock;
     private readonly TradeManager _tradeManager;
+    private const string iso8601Format = "o";
 
     public TradeManagerTest()
     {
@@ -94,12 +93,12 @@ public class TradeManagerTest
         var report = await tradeManagerTest.GetTradeReportAsync(testDate);
 
         // Assert
-        var assertTestDate = TimeZoneInfo.ConvertTime(testDate, TimeZoneInfo.FindSystemTimeZoneById(localTimeZone)).ToUniversalTime();
-        report.PowerPeriods.First().dateTime.Kind.Should().Be(DateTimeKind.Utc);
+        // Assert that the dateTime is in UTC and in ISO 8601 format
+        var assertTestDate = TimeZoneInfo.ConvertTime(testDate, TimeZoneInfo.FindSystemTimeZoneById(localTimeZone)).ToUniversalTime().ToString(iso8601Format);
         report.PowerPeriods.First().dateTime.Should().Be(assertTestDate);
     }
 
-    private IEnumerable<PowerTrade> GeneratePowerTrades(DateTime dateTime, int powerTrades, int periods, double volume)
+    private static List<PowerTrade> GeneratePowerTrades(DateTime dateTime, int powerTrades, int periods, double volume)
     {
         var powerTradesTest = new List<PowerTrade>();
         for (int i = 0; i < powerTrades; i++)
