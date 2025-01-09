@@ -13,13 +13,19 @@ public class ReportManager(ITradeManager tradeManager,
     ResiliencePipelineProvider<string> pipelineProvider)
     : IReportManager
 {
-    private readonly ResiliencePipeline _pipeline = pipelineProvider.GetPipeline("retryPipeline");
-    private readonly string basePath = configuration.GetSection("CsvHelperConfig:PublishPath").Value ?? throw new ArgumentNullException(nameof(ReportManager), "Null configuration section");
+    private readonly ResiliencePipeline _pipeline = pipelineProvider.GetPipeline("retryPipeline")
+        ?? throw new ArgumentNullException(nameof(pipelineProvider), "Pipeline provider cannot be null.");
+
+    private readonly string basePath = configuration.GetSection("CsvHelperConfig:PublishPath").Value 
+        ?? throw new ArgumentNullException(nameof(configuration), "Null configuration section");
 
     /// <inheritdoc/>
     // This method could have more logging
-    public async Task GenerateReportCsvAsync(DateTime reportDate, string identifier)
+    public async Task GenerateReportCsvAsync(DateTime reportDate, Guid identifier)
     {
+        if (reportDate == default)
+            throw new ArgumentException("Invalid date provided for reportDate");
+
         var nextDay = reportDate.AddDays(1);
         var fileName = GenerateNameCsv(reportDate, nextDay);
         var publishPath = string.Concat([basePath, fileName]);
