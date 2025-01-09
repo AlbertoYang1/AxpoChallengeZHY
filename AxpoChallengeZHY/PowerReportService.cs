@@ -17,7 +17,7 @@ public class PowerReportService(ILogger<PowerReportService> logger, IReportManag
     {
         // DateTime.Now has a local timeZone from the machine it can be changed to offset
         var reportDate = DateTime.Now;
-        var identifier = Guid.NewGuid().ToString();
+        var identifier = Guid.NewGuid();
 
         // In production it can be done in another way. Readme logging
         _logger.LogInformation("Start report generation for Date: {reportDate} and id: {identifier}", reportDate, identifier);

@@ -8,5 +8,5 @@ public interface IReportManager
     /// <param name="reportDate">Date of the request</param>
     /// <param name="identifier">Identifier of the request</param>
     /// <returns></returns>
-    Task GenerateReportCsvAsync(DateTime reportDate, string identifier);
+    Task GenerateReportCsvAsync(DateTime reportDate, Guid identifier);
 }

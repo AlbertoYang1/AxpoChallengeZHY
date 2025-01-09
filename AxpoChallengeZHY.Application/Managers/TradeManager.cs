@@ -8,7 +8,7 @@ namespace AxpoChallengeZHY.Application.Managers;
 
 public class TradeManager(IPowerService powerService, IConfiguration configuration) : ITradeManager
 {
-    private readonly IPowerService _powerService = powerService;
+    private readonly IPowerService _powerService = powerService ?? throw new ArgumentNullException(nameof(powerService));
     private readonly string _timeZoneId = configuration.GetSection("LocalTimeZone").Value ?? throw new ArgumentNullException("No local timeZone set on appsettings");
 
     private const string iso8601Format = "o";
@@ -17,17 +17,20 @@ public class TradeManager(IPowerService powerService, IConfiguration configurati
     // This method could have more logging
     public async Task<ReportDto> GetTradeReportAsync(DateTime nextDay)
     {
-
         var trades = await _powerService.GetTradesAsync(nextDay);
         var tradesList = trades.ToList();
+
         // Throw custom exception if there's no data, actions may vary on business needs 
         if (tradesList is null || tradesList.Count == 0)
             throw new NoTradesException("No data was retrieved from PowerService in TradeManager");
 
         // We assume every period has the same Length an date
-        // We could validate this assumption and throw an exception if it's not true
         var periodCount = tradesList.First().Periods.Length;
         var powerTradeDay = tradesList.First().Date.Date;
+
+        // We can separate this validation in a separate method and for each validation
+        if (tradesList.Any(t => t.Periods.Length != periodCount || t.Date.Date != powerTradeDay))
+            throw new ArgumentException("Invalid data retrieved from PowerService");
 
         var powerTradeDayUtc = GetLocalDateTime(powerTradeDay);
         var powerPeriods = new List<(string dateTimes, double volumes)>();
