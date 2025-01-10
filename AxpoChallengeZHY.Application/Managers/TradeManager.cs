@@ -51,8 +51,20 @@ public class TradeManager(IPowerService powerService, IConfiguration configurati
     /// <param name="powerPeriodDate"></param>
     /// <returns></returns>
     // This method could be moved to a utils file
-    private DateTime GetLocalDateTime(DateTime powerPeriodDate) =>
+    private DateTime GetLocalDateTime(DateTime powerPeriodDate)
+    {
         // ToUniversalTime() already takes care of Daylight saving time 
-        TimeZoneInfo.ConvertTime(powerPeriodDate, TimeZoneInfo.FindSystemTimeZoneById(_timeZoneId)).ToUniversalTime();
+        var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(_timeZoneId);
+
+        // If the DateTime is not explicitly set as Unspecified, convert it to Unspecified
+        if (powerPeriodDate.Kind != DateTimeKind.Unspecified)
+        {
+            powerPeriodDate = DateTime.SpecifyKind(powerPeriodDate, DateTimeKind.Unspecified);
+        }
+
+        var localDateTime = TimeZoneInfo.ConvertTimeToUtc(powerPeriodDate, timeZoneInfo);
+
+        return localDateTime;
+    }
 
 }

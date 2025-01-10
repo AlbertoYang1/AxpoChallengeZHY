@@ -94,8 +94,8 @@ public class TradeManagerTest
 
         // Assert
         // Assert that the dateTime is in UTC and in ISO 8601 format
-        var assertTestDate = TimeZoneInfo.ConvertTime(testDate, TimeZoneInfo.FindSystemTimeZoneById(localTimeZone)).ToUniversalTime().ToString(iso8601Format);
-        report.PowerPeriods.First().dateTime.Should().Be(assertTestDate);
+        var assertTestDate = GetLocalDateTime(testDate, localTimeZone);
+        report.PowerPeriods.First().dateTime.Should().Be(assertTestDate.ToString(iso8601Format));
     }
 
     private static List<PowerTrade> GeneratePowerTrades(DateTime dateTime, int powerTrades, int periods, double volume)
@@ -114,6 +114,23 @@ public class TradeManagerTest
         }
 
         return powerTradesTest;
+    }
+
+    // Not the best way to test this method, but it's a private method and it's not worth to make it public
+    private DateTime GetLocalDateTime(DateTime powerPeriodDate, string timeZoneId)
+    {
+        // ToUniversalTime() already takes care of Daylight saving time 
+        var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+
+        // If the DateTime is not explicitly set as Unspecified, convert it to Unspecified
+        if (powerPeriodDate.Kind != DateTimeKind.Unspecified)
+        {
+            powerPeriodDate = DateTime.SpecifyKind(powerPeriodDate, DateTimeKind.Unspecified);
+        }
+
+        var localDateTime = TimeZoneInfo.ConvertTimeToUtc(powerPeriodDate, timeZoneInfo);
+
+        return localDateTime;
     }
 }
 

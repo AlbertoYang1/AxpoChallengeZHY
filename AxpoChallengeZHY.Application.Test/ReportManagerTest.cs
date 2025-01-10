@@ -47,7 +47,7 @@ public class ReportManagerTest
         _reportRepository.Setup(x => x.SaveReportCsvAsync(It.IsAny<ReportDto>(), It.IsAny<string>()));
         // Act
 
-        await _reportManager.GenerateReportCsvAsync(new DateTime(2024, 11, 27), Guid.NewGuid());
+        await _reportManager.GenerateReportAsync(new DateTime(2024, 11, 27), Guid.NewGuid());
 
         // Assert
         _tradeManagerMock.Verify(x => x.GetTradeReportAsync(It.IsAny<DateTime>()), Times.Once);
@@ -63,7 +63,7 @@ public class ReportManagerTest
 
         //Act & Assert
         await _reportManager.Invoking(async x =>
-            await x.GenerateReportCsvAsync(new DateTime(2024, 11, 27), Guid.NewGuid()))
+            await x.GenerateReportAsync(new DateTime(2024, 11, 27), Guid.NewGuid()))
         .Should()
         .ThrowAsync<PowerServiceException>()
         .WithMessage("Error retrieving power volumes");
@@ -79,7 +79,7 @@ public class ReportManagerTest
 
         //Act & Assert
         await _reportManager.Invoking(async x =>
-            await x.GenerateReportCsvAsync(new DateTime(2024, 11, 27), Guid.NewGuid()))
+            await x.GenerateReportAsync(new DateTime(2024, 11, 27), Guid.NewGuid()))
         .Should()
         .ThrowAsync<NoTradesException>()
         .WithMessage("No data was retrieved from PowerService in TradeManager");
