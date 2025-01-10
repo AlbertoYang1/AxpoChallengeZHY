@@ -16,25 +16,25 @@ public class ReportManager(ITradeManager tradeManager,
     private readonly ResiliencePipeline _pipeline = pipelineProvider.GetPipeline("retryPipeline")
         ?? throw new ArgumentNullException(nameof(pipelineProvider), "Pipeline provider cannot be null.");
 
-    private readonly string basePath = configuration.GetSection("CsvHelperConfig:PublishPath").Value 
+    private readonly string _basePath = configuration.GetSection("CsvHelperConfig:PublishPath").Value 
         ?? throw new ArgumentNullException(nameof(configuration), "Null configuration section");
 
     /// <inheritdoc/>
     // This method could have more logging
-    public async Task GenerateReportCsvAsync(DateTime reportDate, Guid identifier)
+    public async Task GenerateReportAsync(DateTime reportDate, Guid identifier)
     {
         if (reportDate == default)
             throw new ArgumentException("Invalid date provided for reportDate");
 
         var nextDay = reportDate.AddDays(1);
         var fileName = GenerateNameCsv(reportDate, nextDay);
-        var publishPath = string.Concat([basePath, fileName]);
+        var publishPath = Path.Combine(_basePath, fileName);
 
         // pipeline which handle the retries, configured in program.cs
         var reportDto = await _pipeline.ExecuteAsync(async _ => await tradeManager.GetTradeReportAsync(nextDay));
 
         // Create directory if it does not exist
-        Directory.CreateDirectory(basePath);
+        Directory.CreateDirectory(_basePath);
 
         await reportRepository.SaveReportCsvAsync(reportDto, publishPath);
         logger.LogInformation("Identifier: {Identifier} at reportDate: {ReportDate}. Published report {FileName} in {Path}"
@@ -47,5 +47,5 @@ public class ReportManager(ITradeManager tradeManager,
     /// <param name="reportDate">Date of the request</param>
     /// <returns>csv file name for the power report</returns>
     private static string GenerateNameCsv(DateTime reportDate, DateTime nextDay) =>
-        $"PowerPosition_{nextDay:yyyyMMdd}_{reportDate:yyyyMMddhhmm}.csv";
+        $"PowerPosition_{nextDay:yyyyMMdd}_{reportDate:yyyyMMddHHmm}.csv";
 }

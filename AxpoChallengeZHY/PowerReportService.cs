@@ -24,7 +24,7 @@ public class PowerReportService(ILogger<PowerReportService> logger, IReportManag
 
         try
         {
-            await _reportManager.GenerateReportCsvAsync(reportDate, identifier);
+            await _reportManager.GenerateReportAsync(reportDate, identifier);
 
             _logger.LogInformation("End report generation for Date: {reportDate} and id: {identifier}", reportDate, identifier);
         }
